@@ -134,7 +134,9 @@ export const onAddStudents = async (req, res) => {
 
     for (let student of students) {
       let user = await UserModel.findOne({ email: student.email });
+
       if (user) {
+        console.log(user);
         user.courses.push({ ...course, instructorId: headOfUser._id });
         await user.save();
       } else {
@@ -146,6 +148,7 @@ export const onAddStudents = async (req, res) => {
           role: student.role,
           courses: [{ ...course, instructorId: headOfUser._id }],
         });
+
         await user.save();
       }
     }
@@ -414,6 +417,119 @@ export const onFetchingAllTests = async (req, res) => {
 
     const result = await StudentExamModel.find({ head: user._id });
     return res.status(200).json(result);
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onEditTest = async (req, res) => {
+  const { cutOff, resultType } = req.body;
+  console.log(req.params.testId);
+  console.log(cutOff, resultType);
+  try {
+    if (req.params.testId && resultType) {
+      await StudentExamModel.updateOne(
+        { _id: req.params.testId }, // Filter by document _id
+        {
+          $set: {
+            "examsSections.$[elem].resultType": resultType, // Update resultType in examsSections
+            cutOff: cutOff, // Add or update cutOff field in the main document
+          },
+        },
+        {
+          arrayFilters: [{ "elem._id": { $exists: true } }], // Filter for all elements in examsSections
+        }
+      );
+      return res.status(201).json({ message: "Updated successfully" });
+    } else {
+      return res.status(400).json({ message: "Please send resultType" });
+    }
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onDeleteTest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await StudentExamModel.deleteOne({ _id: id });
+
+    return res.status(204).json({ message: "Test deleted successfully//!" });
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onEditExam = async (req, res) => {
+  const { level, mcqsToAdd } = req.body; //
+  try {
+    const updatedDocument = await ExamWithMcqModel.findOneAndUpdate(
+      { _id: req.params.id }, // Filter by document _id
+      {
+        $set: { level: level }, // Update 'level' field
+        $push: { mcqs: { $each: mcqsToAdd } }, // Add new MCQs to 'mcqs' array
+      },
+      { new: true } // To return the updated document
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Updated successfully", updatedDocument });
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onDeleteExam = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await ExamWithMcqModel.deleteOne({ _id: id });
+
+    return res.status(204).json({ message: "Exam deleted successfully//!" });
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onDeleteBatch = async (req, res) => {
+  const { batchId, batchName, purpose } = req.body; // Assuming these fields are passed in the request body
+
+  try {
+    const updatedDocuments = await UserModel.updateMany(
+      {
+        "courses.batchId": batchId,
+        "courses.courseName": batchName,
+        "courses.purpose": purpose,
+      },
+      {
+        $pull: {
+          courses: {
+            batchId: batchId,
+            courseName: batchName,
+            purpose: purpose,
+          },
+        },
+      }
+    );
+
+    if (updatedDocuments.nModified === 0) {
+      return res
+        .status(404)
+        .json({ message: "No matching documents found or no courses deleted" });
+    }
+
+    return res.status(200).json({
+      message: "Courses deleted successfully from matching documents",
+    });
   } catch (error) {
     console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });

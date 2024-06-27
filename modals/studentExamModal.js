@@ -35,6 +35,7 @@ const StudentExamSchema = new Schema(
       type: String,
       required: true,
     },
+    cutOff: { type: String },
 
     examsSections: [
       {
@@ -82,6 +83,9 @@ const StudentExamSchema = new Schema(
         studentId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
+        },
+        totalMark: {
+          type: String,
         },
         afterWritingExams: [],
       },

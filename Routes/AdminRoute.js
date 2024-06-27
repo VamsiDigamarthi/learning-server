@@ -7,6 +7,11 @@ import {
   onAddMaterials,
   onAddStudents,
   onAddTest,
+  onDeleteBatch,
+  onDeleteExam,
+  onDeleteTest,
+  onEditExam,
+  onEditTest,
   onFetchingAllStudents,
   onFetchingAllStudentsProjects,
   onFetchingAllTests,
@@ -51,5 +56,17 @@ router.post("/add-test", authenticateToken, onAddTest);
 // fetching all test
 
 router.get("/fetching-all-test", authenticateToken, onFetchingAllTests);
+
+router.patch("/edit-test/:testId", onEditTest);
+
+router.delete("/delete-test/:id", onDeleteTest);
+
+// edit exam
+router.patch("/edit-exam/:id", onEditExam);
+router.delete("/delete-exam/:id", onDeleteExam);
+
+// delete student
+
+router.patch("/delete-batch", onDeleteBatch);
 
 export default router;

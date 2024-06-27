@@ -176,11 +176,19 @@ export const onSubmittedExam = async (req, res) => {
       return res.status(200).json(user);
     }
 
+    if (!req.body) {
+      return res.status(400).json({ message: "No data send form client ...!" });
+    }
+
+    let totalMark = 0;
+    req.body?.forEach((each) => (totalMark += each.totalMarks));
+    console.log(totalMark);
     const result = await StudentExamModel.updateOne(
       { _id: req.params.id, "students.studentId": user._id },
       {
         $set: {
           "students.$.afterWritingExams": req.body,
+          "students.$.totalMark": totalMark,
         },
       }
     );
