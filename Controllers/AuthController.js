@@ -45,7 +45,7 @@ export const onLoginUser = async (req, res) => {
   // console.log(req.body);
   try {
     const user = await UserModel.findOne({
-      email: email,
+      $or: [{ userName: email }, { email: email }],
     });
 
     if (user) {
@@ -161,6 +161,280 @@ export const onUpdateTodo = async (req, res) => {
     } else {
       return res.status(404).json({ message: "todo not found..!" });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onUpdateProfile = async (req, res) => {
+  const { email } = req;
+
+  // const {
+
+  //   firstName,
+  //   lastName,
+  //   mobile,
+  //   userEmail,
+  //   level,
+  // } = req.body;
+  const image = req.file ? req.file.path : null;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { image } },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Updated profile successfully...!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onChangeProfessinalInfo = async (req, res) => {
+  const { email } = req;
+  const { designation, joiningDate, trainerId } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { designation, joiningDate, trainerId } },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Updated profile successfully...!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onChangePersonalInfo = async (req, res) => {
+  const { firstName, lastName, mobile } = req.body;
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { firstName, lastName, mobile } },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Updated profile successfully...!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onChangeBio = async (req, res) => {
+  const { bio } = req.body;
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { bio } },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Updated profile successfully...!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onExpericesChange = async (req, res) => {
+  const { email } = req;
+  const { trainerId, firstName, lastName, mobile, userEmail } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { firstName, lastName, mobile, userEmail, trainerId } },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Updated Experices successfully...!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+// if (level) editProfileData.level = level;
+// if (institution) editProfileData.institution = institution;
+// if (branch) editProfileData.branch = branch;
+// if (marksPercentage) editProfileData.marksPercentage = marksPercentage;
+// if (passoutYear) editProfileData.passoutYear = passoutYear;
+
+export const onEddEducation = async (req, res) => {
+  const { email } = req;
+  // const { education } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    user.education = req.body;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Education details updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onChangeResume = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { resume: req.file.path } },
+      { new: true }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Education details updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onBankChange = async (req, res) => {
+  const { email } = req;
+  const { resume, bankName, ifscCode, branchName, accountName, upiId } =
+    req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { resume, bankName, ifscCode, branchName, accountName, upiId } },
+      { new: true }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Education details updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onChangePassword = async (req, res) => {
+  const { email } = req;
+  const { password } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json({ message: "User not found" });
+    }
+
+    await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { password } },
+      { new: true }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Education details updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({

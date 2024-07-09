@@ -21,6 +21,7 @@ app.use(
 );
 app.use(express.json());
 app.use("/files", express.static("files"));
+app.use("/uploads", express.static("uploads"));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(

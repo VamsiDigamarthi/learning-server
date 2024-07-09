@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
+const Educate = new Schema({
+  level: {
+    type: String,
+  },
+  institution: { type: String },
+  branch: { type: String },
+  marksPercentage: { type: String },
+  passoutYear: { type: String },
+});
+
 const userSchema = new Schema(
   {
     firstName: {
@@ -46,6 +56,23 @@ const userSchema = new Schema(
         },
       },
     ],
+
+    // profile section
+    image: {
+      type: String,
+    },
+    joiningDate: {
+      type: String,
+    },
+    mobile: { type: String },
+    bio: { type: String },
+    education: [],
+    resume: { type: String },
+    bankName: { type: String },
+    ifscCode: { type: String },
+    branchName: { type: String },
+    accountName: { type: String },
+    upiId: { type: String },
   },
   { timestamps: true }
 );

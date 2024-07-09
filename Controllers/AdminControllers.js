@@ -146,6 +146,7 @@ export const onAddStudents = async (req, res) => {
           email: student.email,
           password: student.password,
           role: student.role,
+          userName: student.userName,
           courses: [{ ...course, instructorId: headOfUser._id }],
         });
 
@@ -530,6 +531,15 @@ export const onDeleteBatch = async (req, res) => {
     return res.status(200).json({
       message: "Courses deleted successfully from matching documents",
     });
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchFeedBack = async (req, res) => {
+  const { instructorId, courseName } = req.params;
+  try {
   } catch (error) {
     console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });

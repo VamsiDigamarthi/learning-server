@@ -12,6 +12,7 @@ import {
   onDeleteTest,
   onEditExam,
   onEditTest,
+  onFetchFeedBack,
   onFetchingAllStudents,
   onFetchingAllStudentsProjects,
   onFetchingAllTests,
@@ -68,5 +69,7 @@ router.delete("/delete-exam/:id", onDeleteExam);
 // delete student
 
 router.patch("/delete-batch", onDeleteBatch);
+
+router.get("/feedback/:instructorId/:courseName", onFetchFeedBack);
 
 export default router;

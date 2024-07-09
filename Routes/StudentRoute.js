@@ -2,6 +2,8 @@ import express from "express";
 
 import { authenticateToken } from "../middlewares/AuthMiddelware.js";
 import {
+  onAddFeebBack,
+  onFecthFeedback,
   onFetchAllMaterials,
   onFetchAllMentors,
   onFetchQuized,
@@ -39,5 +41,9 @@ router.get("/mentors", authenticateToken, onFetchAllMentors);
 router.post("/submitted-exam/:id", authenticateToken, onSubmittedExam);
 
 router.get("/preview/:id", authenticateToken, onPreview);
+
+router.post("/feebback", authenticateToken, onAddFeebBack);
+
+router.get("/feedback", authenticateToken, onFecthFeedback);
 
 export default router;

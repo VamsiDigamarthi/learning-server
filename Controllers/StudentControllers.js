@@ -4,6 +4,7 @@ import MaterialSchema from "../modals/materialModal.js";
 import ExamWithMcqModel from "../modals/examWithMcq.js";
 import QuizeModel from "../modals/quizeMOdal.js";
 import MaterialModel from "../modals/materialModal.js";
+import FeedbackModel from "../modals/FeedbackModal.js";
 export const onFetchingAllExams = async (req, res) => {
   const { email } = req;
   try {
@@ -18,10 +19,23 @@ export const onFetchingAllExams = async (req, res) => {
     const exams = await StudentExamModel.find({
       "students.studentId": user._id,
     })
-      .select("head courseName date time passKey purpose examsSections")
-      .populate("examsSections.examuniqueId", "examId mcqs");
+      .select(
+        "testId head courseName date time passKey purpose examsSections students.afterWritingExams students.totalMark"
+      )
+      .populate("examsSections.examuniqueId", "examId mcqs")
+      .populate("students.studentId", "firstName lastName email");
+    const filteredExams = exams.map((exam) => {
+      const filteredStudents = exam.students.filter((student) =>
+        student.studentId._id.equals(user._id)
+      );
+      return {
+        ...exam.toObject(),
+        students: filteredStudents,
+      };
+    });
 
-    return res.status(200).json(exams);
+    return res.status(200).json(filteredExams);
+    // return res.status(200).json(exams);
   } catch (error) {
     console.log("register user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });
@@ -181,7 +195,7 @@ export const onSubmittedExam = async (req, res) => {
     }
 
     let totalMark = 0;
-    req.body?.forEach((each) => (totalMark += each.totalMarks));
+    req?.body?.forEach((each) => (totalMark += each.totalMarks));
     console.log(totalMark);
     const result = await StudentExamModel.updateOne(
       { _id: req.params.id, "students.studentId": user._id },
@@ -241,6 +255,47 @@ export const onPreview = async (req, res) => {
     }
 
     res.json(result);
+  } catch (error) {
+    console.log("register user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onAddFeebBack = async (req, res) => {
+  const { email } = req;
+  const { courseName, rating, instructorId, feedbackform } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json(user);
+    }
+
+    const docs = {
+      courseName,
+      rating,
+      instructorId,
+      feedbackform,
+      creater: user._id,
+    };
+
+    const feeBack = new FeedbackModel(docs);
+
+    await feeBack.save();
+
+    return res
+      .status(201)
+      .json({ message: "Feed-back added successfully...!" });
+  } catch (error) {
+    console.log("register user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFecthFeedback = async (req, res) => {
+  try {
   } catch (error) {
     console.log("register user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });
