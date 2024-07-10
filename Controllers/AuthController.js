@@ -5,8 +5,18 @@ import "dotenv/config";
 import TodoModel from "../modals/todoModal.js";
 
 export const onRegisterUser = async (req, res) => {
-  const { firstName, lastName, email, password, role, course, key, trainerId } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+    course,
+    key,
+    trainerId,
+    designation,
+    joiningDate,
+  } = req.body;
 
   // const saltRounds = 10;
   // const salt = bcrypt.genSaltSync(saltRounds);
@@ -28,6 +38,8 @@ export const onRegisterUser = async (req, res) => {
       trainerId,
       course: [course],
       key,
+      designation,
+      joiningDate,
     };
     // console.log(docs);
 

@@ -237,11 +237,15 @@ export const onFetchAllMaterialByTrainer = async (req, res) => {
 };
 
 export const onPostFeedBack = async (req, res) => {
+  // console.log(req.body.feedBackQuestions);
   try {
     const docs = {
       instructorId: req.body.instructorId,
       courseName: req.body.courseName,
+      trainerName: req.body.trainerName,
+      designation: req.body.designation,
       feedBackQuestions: req.body.feedBackQuestions,
+      // questionType: req.body.questionType,
     };
 
     const newModal = new PostfeedbackModel(docs);

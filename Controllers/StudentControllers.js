@@ -5,6 +5,7 @@ import ExamWithMcqModel from "../modals/examWithMcq.js";
 import QuizeModel from "../modals/quizeMOdal.js";
 import MaterialModel from "../modals/materialModal.js";
 import FeedbackModel from "../modals/FeedbackModal.js";
+import PostfeedbackModel from "../modals/PostFeedBack.js";
 export const onFetchingAllExams = async (req, res) => {
   const { email } = req;
   try {
@@ -294,10 +295,35 @@ export const onAddFeebBack = async (req, res) => {
   }
 };
 
-export const onFecthFeedback = async (req, res) => {
+export const onFetchFeedBack = async (req, res) => {
+  const { instructorId, courseName } = req.params;
   try {
+    if (courseName) {
+      const feebBack = await PostfeedbackModel.findOne({
+        instructorId,
+        courseName,
+      });
+      return res.status(200).json(feebBack);
+    } else {
+      const feebBack = await PostfeedbackModel.findOne({
+        instructorId,
+      });
+      return res.status(200).json(feebBack);
+    }
   } catch (error) {
-    console.log("register user- errors", error);
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchSuperAdmin = async (req, res) => {
+  try {
+    const superAdmin = await UserModel.findOne({ role: "1" }).select(
+      "firstName"
+    );
+    return res.status(200).json(superAdmin);
+  } catch (error) {
+    console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };

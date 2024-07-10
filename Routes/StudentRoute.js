@@ -3,10 +3,12 @@ import express from "express";
 import { authenticateToken } from "../middlewares/AuthMiddelware.js";
 import {
   onAddFeebBack,
-  onFecthFeedback,
-  onFetchAllMaterials,
+  // onFecthFeedback,
+  // onFetchAllMaterials,
   onFetchAllMentors,
+  onFetchFeedBack,
   onFetchQuized,
+  onFetchSuperAdmin,
   onFetchingAllExams,
   onFetchingMcqs,
   onFetchingPdfs,
@@ -44,6 +46,7 @@ router.get("/preview/:id", authenticateToken, onPreview);
 
 router.post("/feebback", authenticateToken, onAddFeebBack);
 
-router.get("/feedback", authenticateToken, onFecthFeedback);
+router.get("/get-super-admin", onFetchSuperAdmin);
+router.get("/feedback/:instructorId/:courseName", onFetchFeedBack);
 
 export default router;

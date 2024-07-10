@@ -3,6 +3,7 @@ import express from "express";
 import { authenticateToken } from "../middlewares/AuthMiddelware.js";
 import {
   fetchAllPdfs,
+  onAddCodingQuestio,
   onAddExams,
   onAddMaterials,
   onAddStudents,
@@ -12,7 +13,6 @@ import {
   onDeleteTest,
   onEditExam,
   onEditTest,
-  onFetchFeedBack,
   onFetchingAllStudents,
   onFetchingAllStudentsProjects,
   onFetchingAllTests,
@@ -33,6 +33,8 @@ router.get("/all-pdfs", authenticateToken, fetchAllPdfs);
 
 // add exma
 router.post("/add-exam", authenticateToken, onAddExams);
+
+router.post("/add-coding-question", authenticateToken, onAddCodingQuestio);
 
 // get all exams list
 
@@ -69,7 +71,5 @@ router.delete("/delete-exam/:id", onDeleteExam);
 // delete student
 
 router.patch("/delete-batch", onDeleteBatch);
-
-router.get("/feedback/:instructorId/:courseName", onFetchFeedBack);
 
 export default router;

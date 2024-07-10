@@ -6,10 +6,10 @@ const FeedbackSchema = new Schema(
     courseName: {
       type: String,
     },
-    rating: {
-      type: Number,
-      required: true,
-    },
+    // rating: {
+    //   type: Number,
+    //   required: true,
+    // },
     date: {
       type: Date,
       default: new Date(),

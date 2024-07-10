@@ -73,6 +73,7 @@ const userSchema = new Schema(
     branchName: { type: String },
     accountName: { type: String },
     upiId: { type: String },
+    designation: { type: String },
   },
   { timestamps: true }
 );

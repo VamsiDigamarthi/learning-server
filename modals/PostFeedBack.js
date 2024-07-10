@@ -8,6 +8,10 @@ const QuestionSchema = new Schema({
   },
   answers: {
     type: [String],
+    // required: true,
+  },
+  questionType: {
+    type: String,
     required: true,
   },
 });
@@ -20,11 +24,13 @@ const PostfeedbackSchema = new Schema(
     },
     courseName: {
       type: String,
-      required: true,
     },
+    trainerName: { type: String },
+    designation: { type: String },
     instructorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     feedBackQuestions: {
       type: [QuestionSchema],

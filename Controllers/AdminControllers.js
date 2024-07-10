@@ -98,6 +98,32 @@ export const onAddExams = async (req, res) => {
   }
 };
 
+// new
+export const onAddCodingQuestio = async (req, res) => {
+  const { email } = req;
+  const { examId, courseName, topic, level, mcqs, description } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    let transformedArray = mcqs?.map((obj) => {
+      let { Option1, Option2, Option3, Option4, Option5, ...rest } = obj; // Destructuring to remove "email"
+      return {
+        ...rest,
+        asnwers: [Option1, Option2, Option3, Option4, Option5 && Option5],
+      }; // Adding "city" field
+    });
+  } catch (error) {
+    console.log("Coding user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
 export const onGetAllExams = async (req, res) => {
   const { email } = req;
   try {
@@ -531,15 +557,6 @@ export const onDeleteBatch = async (req, res) => {
     return res.status(200).json({
       message: "Courses deleted successfully from matching documents",
     });
-  } catch (error) {
-    console.log("login user- errors", error);
-    return res.status(500).json({ message: "Something went wrong", error });
-  }
-};
-
-export const onFetchFeedBack = async (req, res) => {
-  const { instructorId, courseName } = req.params;
-  try {
   } catch (error) {
     console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });
