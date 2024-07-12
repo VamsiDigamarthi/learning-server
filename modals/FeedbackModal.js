@@ -23,6 +23,7 @@ const FeedbackSchema = new Schema(
       ref: "User",
     },
     feedbackform: [],
+    trainerName: { type: String },
   },
   { timestamps: true }
 );

@@ -7,6 +7,7 @@ import {
   // onFetchAllMaterials,
   onFetchAllMentors,
   onFetchFeedBack,
+  onFetchFeedBackOrganization,
   onFetchQuized,
   onFetchSuperAdmin,
   onFetchingAllExams,
@@ -48,5 +49,7 @@ router.post("/feebback", authenticateToken, onAddFeebBack);
 
 router.get("/get-super-admin", onFetchSuperAdmin);
 router.get("/feedback/:instructorId/:courseName", onFetchFeedBack);
+
+router.get("/feedback/:instructorId/", onFetchFeedBackOrganization);
 
 export default router;

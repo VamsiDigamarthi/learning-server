@@ -264,7 +264,8 @@ export const onPreview = async (req, res) => {
 
 export const onAddFeebBack = async (req, res) => {
   const { email } = req;
-  const { courseName, rating, instructorId, feedbackform } = req.body;
+  const { courseName, rating, instructorId, feedbackform, trainerName } =
+    req.body;
   try {
     const user = await UserModel.findOne({
       email: email,
@@ -280,6 +281,7 @@ export const onAddFeebBack = async (req, res) => {
       instructorId,
       feedbackform,
       creater: user._id,
+      trainerName,
     };
 
     const feeBack = new FeedbackModel(docs);
@@ -322,6 +324,19 @@ export const onFetchSuperAdmin = async (req, res) => {
       "firstName"
     );
     return res.status(200).json(superAdmin);
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchFeedBackOrganization = async (req, res) => {
+  const { instructorId } = req.params;
+  try {
+    const feebBack = await PostfeedbackModel.findOne({
+      instructorId,
+    });
+    return res.status(200).json(feebBack);
   } catch (error) {
     console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });

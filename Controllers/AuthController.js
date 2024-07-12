@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import TodoModel from "../modals/todoModal.js";
+import OtpModel from "../modals/otpModal.js";
+import nodemailer from "nodemailer";
 
 export const onRegisterUser = async (req, res) => {
   const {
@@ -56,8 +58,15 @@ export const onLoginUser = async (req, res) => {
   const { email, password } = req.body;
   // console.log(req.body);
   try {
+    const checkingUser = await UserModel.findOne({
+      $or: [{ trainerId: email }, { email: email }, { studentId: email }],
+    });
+
+    // return res.status(200).json(checkingUser);
+    // console.log(checkingUser);
+
     const user = await UserModel.findOne({
-      $or: [{ userName: email }, { email: email }],
+      $or: [{ trainerId: email }, { email: email }, { studentId: email }],
     });
 
     if (user) {
@@ -447,6 +456,164 @@ export const onChangePassword = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Education details updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onCheckingUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const checkingUser = await UserModel.findOne({
+      $or: [{ trainerId: userId }, { email: userId }, { studentId: userId }],
+    });
+
+    if (checkingUser) {
+      return res.status(200).json({ email: checkingUser.email });
+    } else {
+      return res.status(401).json({ message: "User Not Found..!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+const sendEmails = async (email, otp) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.hostinger.com", // Hostinger's SMTP server
+    port: 465, // Secure SMTP port
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  // console.log("if block exicuted");
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: `Your Verification OTP`,
+    text: `
+                ${otp} 
+             `,
+    html: `<div>
+                  // <h2>Dear</h2>
+                  <p>Your Verification OTP</p>
+                  <h3>${otp}</h3>
+                  
+                  <p>Best regards,</p>
+                  <h4>
+                     DHARANI
+                  </h4>
+                  <h4>
+                    NUHVIN LEARNING SUPPORT
+                  </h4>
+             </div>`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}: ${error.message}`);
+  }
+};
+
+export const onSendOtp = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const otpExist = await OtpModel.findOne({ email: email });
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    if (otpExist) {
+      sendEmails(email, otp);
+      otpExist.otp = otp;
+      await otpExist.save();
+      return res.status(200).json({ message: "OTP send succesfully..!" });
+    } else {
+      sendEmails(email, otp);
+      const newOtp = new OtpModel({ email, otp });
+      await newOtp.save();
+      return res.status(200).json({ message: "Failed to send otp" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onVerifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const otpExist = await OtpModel.findOne({ email: email });
+    if (otpExist) {
+      if (parseInt(otpExist.otp) === parseInt(otp)) {
+        return res.status(200).json({ message: "Otp verification success..!" });
+      } else {
+        return res.status(200).json({ message: "otp verification failed..!" });
+      }
+    } else {
+      return res.status(401).json({ message: "User Not Found..!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "something went wrong",
+      error,
+    });
+  }
+};
+
+export const onFetchNewLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const checkingUser = await UserModel.findOne({
+      $or: [{ trainerId: email }, { email: email }, { studentId: email }],
+    });
+
+    if (checkingUser) {
+      if (checkingUser.role === "1") {
+        if (checkingUser.password === password) {
+          const payload = {
+            email: checkingUser.email,
+          };
+          const jwtToken = jwt.sign(payload, process.env.JWT_TOKEN_SECRET);
+          return res.status(200).json({ token: jwtToken });
+        } else {
+          return res.status(401), json({ message: "In-Correct Password...!" });
+        }
+      } else {
+        if (checkingUser.email === email) {
+          return res.status(400).json({ message: "Please Login with Id...!" });
+        } else {
+          if (checkingUser.password === password) {
+            const payload = {
+              email: checkingUser.email,
+            };
+            const jwtToken = jwt.sign(payload, process.env.JWT_TOKEN_SECRET);
+            return res.status(200).json({ token: jwtToken });
+          } else {
+            return (
+              res.status(401), json({ message: "In-Correct Password...!" })
+            );
+          }
+        }
+      }
+    } else {
+      return res.status(401).json({ message: "User Not Found" });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({

@@ -173,6 +173,7 @@ export const onAddStudents = async (req, res) => {
           password: student.password,
           role: student.role,
           userName: student.userName,
+          studentId: student.studentId,
           courses: [{ ...course, instructorId: headOfUser._id }],
         });
 

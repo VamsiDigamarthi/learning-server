@@ -74,6 +74,7 @@ const userSchema = new Schema(
     accountName: { type: String },
     upiId: { type: String },
     designation: { type: String },
+    studentId: { type: String },
   },
   { timestamps: true }
 );

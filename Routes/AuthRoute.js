@@ -7,14 +7,18 @@ import {
   onChangePersonalInfo,
   onChangeProfessinalInfo,
   onChangeResume,
+  onCheckingUser,
   onEddEducation,
   onExpericesChange,
+  onFetchNewLogin,
   onGetAllTodo,
   onGetProfile,
   onLoginUser,
   onRegisterUser,
+  onSendOtp,
   onUpdateProfile,
   onUpdateTodo,
+  onVerifyOtp,
 } from "../Controllers/AuthController.js";
 import { authenticateToken } from "../middlewares/AuthMiddelware.js";
 import imageUpload from "../middlewares/imageUploadMiddleware.js";
@@ -26,7 +30,7 @@ const router = express.Router();
 
 router.post("/register", onRegisterUser);
 
-router.post("/login", onLoginUser);
+// router.post("/login", onLoginUser);
 
 router.get("/profile", authenticateToken, onGetProfile);
 
@@ -68,5 +72,14 @@ router.post("/add-todo", authenticateToken, onAddTodo);
 router.get("/todo", authenticateToken, onGetAllTodo);
 
 router.get("/update-todo/:id", authenticateToken, onUpdateTodo);
+
+// verity-userId
+router.get("/checing-user/:userId", onCheckingUser);
+
+router.post("/send-otp", onSendOtp);
+
+router.post("/verify-otp", onVerifyOtp);
+
+router.post("/login", onFetchNewLogin);
 
 export default router;
