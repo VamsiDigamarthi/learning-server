@@ -36,7 +36,10 @@ const StudentExamSchema = new Schema(
       required: true,
     },
     cutOff: { type: String },
-
+    resultType: {
+      type: String,
+      required: true,
+    },
     examsSections: [
       {
         examuniqueId: {
@@ -51,10 +54,6 @@ const StudentExamSchema = new Schema(
           required: true,
         },
         cutOff: {
-          type: String,
-          required: true,
-        },
-        resultType: {
           type: String,
           required: true,
         },

@@ -395,6 +395,8 @@ export const onAddTest = async (req, res) => {
     purpose,
     examsSections,
     students,
+    resultType,
+    description,
   } = req.body;
   try {
     const user = await UserModel.findOne({
@@ -412,6 +414,8 @@ export const onAddTest = async (req, res) => {
       time,
       passKey,
       purpose,
+      resultType,
+      description,
       examsSections: examsSections,
       students: students,
       head: user._id,
