@@ -596,7 +596,7 @@ export const onFetchNewLogin = async (req, res) => {
         }
       } else {
         if (checkingUser.email === email) {
-          return res.status(400).json({ message: "Please Login with Id...!" });
+          return res.status(401).json({ message: "Please Login with Id...!" });
         } else {
           if (checkingUser.password === password) {
             const payload = {
@@ -605,14 +605,12 @@ export const onFetchNewLogin = async (req, res) => {
             const jwtToken = jwt.sign(payload, process.env.JWT_TOKEN_SECRET);
             return res.status(200).json({ token: jwtToken });
           } else {
-            return (
-              res.status(401), json({ message: "In-Correct Password...!" })
-            );
+            return res.status(401).json({ message: "In-Correct Password...!" });
           }
         }
       }
     } else {
-      return res.status(401).json({ message: "User Not Found" });
+      return res.status(404).json({ message: "User Not Found" });
     }
   } catch (error) {
     console.log(error);

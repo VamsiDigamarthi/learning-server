@@ -1,0 +1,190 @@
+import TaskModel from "../modals/taskModal.js";
+import UserModel from "../modals/UserModal.js";
+
+export const addTask = async (req, res, next) => {
+  const { email } = req;
+  const {
+    taskId,
+    taskName,
+    priority,
+    startDate,
+    endDate,
+    passKey,
+    description,
+    userId,
+    userName,
+    targetUserId,
+    typeOfUserRole,
+  } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    let headOfId = "";
+    if (user.role === "2") {
+      headOfId = user.head;
+    } else {
+      headOfId = user._id;
+    }
+    // console.log(headOfId);
+
+    // console.log(user);
+
+    const files = req.files;
+
+    const taskFiles = files.map((file) => file.path);
+
+    const doc = {
+      taskId,
+      taskName,
+      priority,
+      startDate,
+      endDate,
+      passKey,
+      description,
+      userId,
+      userName,
+      targetUserId,
+      taskFiles,
+      typeOfUserRole,
+      whoCreated: user._id,
+      headOfOrganization: headOfId,
+    };
+
+    const newTask = new TaskModel(doc);
+    await newTask.save();
+    return res.status(201).json({ message: "task created successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "add trainer failed", error });
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    await TaskModel.deleteOne({ _id: taskId });
+    return res.status(204).json({ message: "task deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "add trainer failed", error });
+  }
+};
+
+export const onEditTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { email } = req;
+  const { taskName, priority, startDate, endDate, passKey, description } =
+    req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const updateFields = {};
+
+    if (taskName) updateFields.taskName = taskName; // Corrected to taskName
+    if (priority) updateFields.priority = priority;
+    if (startDate) updateFields.startDate = startDate;
+    if (endDate) updateFields.endDate = endDate;
+    if (passKey) updateFields.passKey = passKey;
+    if (description) updateFields.description = description;
+
+    const task = await TaskModel.findByIdAndUpdate(
+      { _id: taskId },
+      { $set: updateFields },
+      { new: true }
+    );
+    return res.status(200).json({ message: "task updated successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "add trainer failed", error });
+  }
+};
+
+export const onFetchingTaskIdWithTaskName = async (req, res) => {
+  const { taskId, taskName } = req.params;
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const singleTask = await TaskModel.findOne({
+      $or: [{ _id: taskId }, { taskName: taskName }],
+    });
+
+    return res.status(200).json(singleTask);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "add trainer failed", error });
+  }
+};
+
+export const onFetchingTaskIdWithTaskNameWithStartData = async (req, res) => {
+  const { taskId, taskName } = req.params;
+  const { email } = req;
+  const { startDate } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const singleTask = await TaskModel.findOne({
+      _id: taskId,
+      taskName: taskName,
+      startDate: startDate,
+    });
+    return res.status(200).json(singleTask);
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "fetching student task failed..!", error });
+  }
+};
+
+export const onFetchTrainerOwnTask = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const trainerOwnTask = await TaskModel.find({ targetUserId: user._id });
+
+    return res.status(200).json(trainerOwnTask);
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res
+      .status(500)
+      .json({ message: "Fetch trainer own task failed", error });
+  }
+};

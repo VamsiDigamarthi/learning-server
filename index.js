@@ -9,6 +9,7 @@ import SuperAdmin from "./Routes/SuperAdminRoute.js";
 import Admin from "./Routes/AdminRoute.js";
 import StudentRoute from "./Routes/StudentRoute.js";
 import QuizeRoute from "./Routes/QuizeRoute.js";
+import TaskRoute from "./Routes/TaskRoute.js";
 
 const app = express();
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
@@ -56,3 +57,5 @@ app.use("/admin", Admin);
 app.use("/student", StudentRoute);
 
 app.use("/quize", QuizeRoute);
+
+app.use("/task", TaskRoute);

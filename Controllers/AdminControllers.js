@@ -4,6 +4,7 @@ import MaterialModel from "../modals/materialModal.js";
 import StudentExamSchema from "../modals/studentExamModal.js";
 import nodemailer from "nodemailer";
 import StudentExamModel from "../modals/studentExamModal.js";
+import TaskModel from "../modals/taskModal.js";
 
 export const onAddMaterials = async (req, res) => {
   const { email } = req;
@@ -230,6 +231,7 @@ export const onFetchingAllStudents = async (req, res) => {
               password: "$password",
               role: "$role",
               courses: "$courses",
+              studentId: "$studentId",
             },
           },
         },
@@ -562,6 +564,27 @@ export const onDeleteBatch = async (req, res) => {
     return res.status(200).json({
       message: "Courses deleted successfully from matching documents",
     });
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchStudentTasks = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const allTrainerTask = await TaskModel.find({
+      whoCreated: user._id,
+      typeOfUserRole: "3",
+    });
+    return res.status(200).json(allTrainerTask);
   } catch (error) {
     console.log("login user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });

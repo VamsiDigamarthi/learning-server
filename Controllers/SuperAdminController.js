@@ -3,6 +3,7 @@ import UserModel from "../modals/UserModal.js";
 import ExamWithMcqModel from "../modals/examWithMcq.js";
 import MaterialModel from "../modals/materialModal.js";
 import StudentExamModel from "../modals/studentExamModal.js";
+import TaskModel from "../modals/taskModal.js";
 
 export const onAddedNewCourse = async (req, res) => {
   const { id } = req.params;
@@ -310,5 +311,53 @@ export const onAddTriner = async (req, res, next) => {
   } catch (error) {
     console.log("register user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchSuperAdminTrainerTask = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const allTrainerTask = await TaskModel.find({
+      headOfOrganization: user._id,
+      typeOfUserRole: "2",
+    });
+    return res.status(200).json(allTrainerTask);
+  } catch (error) {
+    console.log("super admin fetch trainer task failed", error);
+    return res
+      .status(500)
+      .json({ message: "super admin fetch trainer task failed", error });
+  }
+};
+
+export const onFetchSuperAdminStudentTask = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const allTrainerTask = await TaskModel.find({
+      headOfOrganization: user._id,
+      typeOfUserRole: "3",
+    });
+    return res.status(200).json(allTrainerTask);
+  } catch (error) {
+    console.log("super admin fetch trainer task failed", error);
+    return res
+      .status(500)
+      .json({ message: "super admin fetch trainer task failed", error });
   }
 };

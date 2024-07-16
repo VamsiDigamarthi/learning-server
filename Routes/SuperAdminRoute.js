@@ -11,6 +11,8 @@ import {
   onFetchAllStudent,
   onFetchAllTest,
   onFetchAllTrainer,
+  onFetchSuperAdminStudentTask,
+  onFetchSuperAdminTrainerTask,
   onGetAllBatchStudents,
   onPostFeedBack,
 } from "../Controllers/SuperAdminController.js";
@@ -45,5 +47,9 @@ router.delete("/delete-mentor/:trainerId", onDeletementor);
 router.post("/feed-back", onPostFeedBack);
 
 router.post("/add-trainer", authenticateToken, onAddTriner);
+
+router.get("/trainer-task", authenticateToken, onFetchSuperAdminTrainerTask);
+
+router.get("/student-task", authenticateToken, onFetchSuperAdminStudentTask);
 
 export default router;
