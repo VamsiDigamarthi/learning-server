@@ -31,8 +31,17 @@ export const onAddedNewCourse = async (req, res) => {
 };
 
 export const onFetchAllTrainer = async (req, res) => {
+  const { email } = req;
   try {
-    const trainer = await UserModel.find({ role: "2" });
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const trainer = await UserModel.find({ head: user._id });
     return res.status(200).json(trainer);
   } catch (error) {
     console.log("register user- errors", error);
@@ -253,6 +262,52 @@ export const onPostFeedBack = async (req, res) => {
     await newModal.save();
 
     return res.status(201).json({ message: "FeedBack Questions Added...!" });
+  } catch (error) {
+    console.log("register user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onAddTriner = async (req, res, next) => {
+  const { email } = req;
+  const {
+    firstName,
+    lastName,
+    trainerEmail,
+    trainerId,
+    designation,
+    course,
+    password,
+    key,
+    joiningDate,
+  } = req.body;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const docs = {
+      firstName,
+      lastName,
+      email: trainerEmail,
+      password,
+      role: "2",
+      trainerId,
+      course: [course],
+      key,
+      designation,
+      joiningDate,
+      head: user._id,
+    };
+    // console.log(docs);
+
+    const newUser = new UserModel(docs);
+    await newUser.save();
+    return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.log("register user- errors", error);
     return res.status(500).json({ message: "Something went wrong", error });

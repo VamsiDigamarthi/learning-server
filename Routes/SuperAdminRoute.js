@@ -3,6 +3,7 @@ import express from "express";
 import { authenticateToken } from "../middlewares/AuthMiddelware.js";
 import {
   onAddedNewCourse,
+  onAddTriner,
   onDeletementor,
   onFetchAllExams,
   onFetchAllMaterialByTrainer,
@@ -18,7 +19,7 @@ const router = express.Router();
 
 router.patch("/added-new-couse-to-admin/:id", onAddedNewCourse);
 
-router.get("/fetch-all-trainer", onFetchAllTrainer);
+router.get("/fetch-all-trainer", authenticateToken, onFetchAllTrainer);
 
 router.get("/all-tests", onFetchAllTest);
 
@@ -42,5 +43,7 @@ router.delete("/delete-mentor/:trainerId", onDeletementor);
 // feed back
 
 router.post("/feed-back", onPostFeedBack);
+
+router.post("/add-trainer", authenticateToken, onAddTriner);
 
 export default router;
