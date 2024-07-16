@@ -21,7 +21,7 @@ export const onFetchingAllExams = async (req, res) => {
       "students.studentId": user._id,
     })
       .select(
-        "testId head courseName date time passKey purpose examsSections students.afterWritingExams students.totalMark"
+        "testId head courseName date time resultType passKey purpose examsSections students.afterWritingExams students.totalMark"
       )
       .populate("examsSections.examuniqueId", "examId mcqs")
       .populate("students.studentId", "firstName lastName email");

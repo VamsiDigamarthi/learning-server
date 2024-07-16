@@ -163,7 +163,7 @@ export const onAddStudents = async (req, res) => {
       let user = await UserModel.findOne({ email: student.email });
 
       if (user) {
-        console.log(user);
+        // console.log(user);
         user.courses.push({ ...course, instructorId: headOfUser._id });
         await user.save();
       } else {
@@ -174,7 +174,7 @@ export const onAddStudents = async (req, res) => {
           password: student.password,
           role: student.role,
           userName: student.userName,
-          studentId: student.studentId,
+          sId: student.studentId,
           courses: [{ ...course, instructorId: headOfUser._id }],
         });
 

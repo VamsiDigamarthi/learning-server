@@ -74,7 +74,7 @@ const userSchema = new Schema(
     accountName: { type: String },
     upiId: { type: String },
     designation: { type: String },
-    studentId: { type: String },
+    sId: { type: String },
     head: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
