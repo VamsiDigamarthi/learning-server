@@ -234,7 +234,6 @@ export const onFetchAllMaterialByTrainer = async (req, res) => {
   // console.log(trainerId);
   try {
     const material = await MaterialModel.find({
-      Author: trainerId,
       courseName: courseName,
     });
 

@@ -36,7 +36,7 @@ router.get("/all-batch-students", onGetAllBatchStudents);
 
 router.get("/all-mentors", onFetchAllMentors);
 
-router.get("/material/:trainerId/:courseName", onFetchAllMaterialByTrainer);
+router.get("/material/:courseName", onFetchAllMaterialByTrainer);
 
 router.delete("/delete-mentor/:trainerId", onDeletementor);
 
