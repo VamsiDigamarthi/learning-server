@@ -580,7 +580,7 @@ export const onFetchNewLogin = async (req, res) => {
   const { email, password } = req.body;
   try {
     const checkingUser = await UserModel.findOne({
-      $or: [{ trainerId: email }, { email: email }, { studentId: email }],
+      $or: [{ trainerId: email }, { email: email }, { sId: email }],
     });
 
     if (checkingUser) {
