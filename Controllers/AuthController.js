@@ -5,6 +5,11 @@ import "dotenv/config";
 import TodoModel from "../modals/todoModal.js";
 import OtpModel from "../modals/otpModal.js";
 import nodemailer from "nodemailer";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const onRegisterUser = async (req, res) => {
   const {
@@ -193,41 +198,96 @@ export const onUpdateTodo = async (req, res) => {
 
 export const onUpdateProfile = async (req, res) => {
   const { email } = req;
-
-  // const {
-
-  //   firstName,
-  //   lastName,
-  //   mobile,
-  //   userEmail,
-  //   level,
-  // } = req.body;
   const image = req.file ? req.file.path : null;
+
   try {
-    const user = await UserModel.findOne({
-      email: email,
-    });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return res.status(200).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    await UserModel.findByIdAndUpdate(
-      { _id: user._id },
+    if (user.image) {
+      const oldImagePath = join(__dirname, "..", user.image);
+
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.log(`Failed to delete old image: ${err}`);
+        } else {
+          console.log(`Deleted old image: ${user.image}`);
+        }
+      });
+    }
+
+    // Update user document with the new image path
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
       { $set: { image } },
       { new: true }
     );
+
     return res
       .status(200)
       .json({ message: "Updated profile successfully...!" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "something went wrong",
-      error,
-    });
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Something went wrong", error });
   }
 };
+
+// export const onUpdateProfile = async (req, res) => {
+//   const { email } = req;
+
+//   // const {
+
+//   //   firstName,
+//   //   lastName,
+//   //   mobile,
+//   //   userEmail,
+//   //   level,
+//   // } = req.body;
+//   const image = req.file ? req.file.path : null;
+//   try {
+//     const user = await UserModel.findOne({
+//       email: email,
+//     });
+
+//     if (!user) {
+//       return res.status(200).json({ message: "User not found" });
+//     }
+
+//     // Check if there's an existing image to delete
+//     if (user.image) {
+//       // Construct full path to the old image file
+//       const oldImagePath = path.join(__dirname, "..", user.image);
+
+//       // Delete the old image file from the filesystem
+//       fs.unlink(oldImagePath, (err) => {
+//         if (err) {
+//           console.log(`Failed to delete old image: ${err}`);
+//           // Handle error, possibly log it
+//         } else {
+//           console.log(`Deleted old image: ${user.image}`);
+//         }
+//       });
+//     }
+
+//     await UserModel.findByIdAndUpdate(
+//       { _id: user._id },
+//       { $set: { image } },
+//       { new: true }
+//     );
+//     return res
+//       .status(200)
+//       .json({ message: "Updated profile successfully...!" });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "something went wrong",
+//       error,
+//     });
+//   }
+// };
 
 export const onChangeProfessinalInfo = async (req, res) => {
   const { email } = req;
@@ -384,6 +444,18 @@ export const onChangeResume = async (req, res) => {
 
     if (!user) {
       return res.status(200).json({ message: "User not found" });
+    }
+
+    if (user.resume) {
+      const oldImagePath = join(__dirname, "..", user.resume);
+
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.log(`Failed to delete old image: ${err}`);
+        } else {
+          console.log(`Deleted old image: ${user.resume}`);
+        }
+      });
     }
 
     await UserModel.findByIdAndUpdate(

@@ -40,6 +40,10 @@ const StudentExamSchema = new Schema(
       type: String,
       required: true,
     },
+    headOfOrganization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     examsSections: [
       {
         examuniqueId: {

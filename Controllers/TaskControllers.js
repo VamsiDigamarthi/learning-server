@@ -1,5 +1,8 @@
 import TaskModel from "../modals/taskModal.js";
 import UserModel from "../modals/UserModal.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
 
 export const addTask = async (req, res, next) => {
   const { email } = req;
@@ -88,8 +91,15 @@ export const deleteTask = async (req, res) => {
 export const onEditTask = async (req, res) => {
   const { taskId } = req.params;
   const { email } = req;
-  const { taskName, priority, startDate, endDate, passKey, description } =
-    req.body;
+  const {
+    taskName,
+    priority,
+    startDate,
+    endDate,
+    passKey,
+    description,
+    deletedFiles,
+  } = req.body;
   try {
     const user = await UserModel.findOne({
       email: email,
@@ -100,12 +110,40 @@ export const onEditTask = async (req, res) => {
     }
     const updateFields = {};
 
+    // const files = req.newFiles;
+
     if (taskName) updateFields.taskName = taskName; // Corrected to taskName
     if (priority) updateFields.priority = priority;
     if (startDate) updateFields.startDate = startDate;
     if (endDate) updateFields.endDate = endDate;
     if (passKey) updateFields.passKey = passKey;
     if (description) updateFields.description = description;
+
+    if (deletedFiles && Array.isArray(deletedFiles)) {
+      deletedFiles.forEach((filePath) => {
+        const fullPath = join(__dirname, "..", filePath);
+        fs.unlink(fullPath, (err) => {
+          if (err) {
+            console.error(`Failed to delete file: ${filePath}`, err);
+          } else {
+            console.log(`Deleted file: ${filePath}`);
+          }
+        });
+      });
+
+      await TaskModel.updateOne(
+        { _id: taskId },
+        { $pull: { taskFiles: { $in: deletedFiles } } }
+      );
+    }
+
+    if (req.newFiles && req.newFiles.length > 0) {
+      const newFiles = req.newFiles.map((file) => file.path);
+      await TaskModel.updateOne(
+        { _id: taskId },
+        { $push: { taskFiles: { $each: newFiles } } }
+      );
+    }
 
     const task = await TaskModel.findByIdAndUpdate(
       { _id: taskId },

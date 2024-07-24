@@ -76,6 +76,10 @@ const userSchema = new Schema(
     designation: { type: String },
     sId: { type: String },
     head: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    headOfOrganization: {
+      type: mongoose.Schema.Types.Object,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

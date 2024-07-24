@@ -88,6 +88,7 @@ export const onAddExams = async (req, res) => {
       description,
       mcqs: transformedArray,
       head: user._id,
+      headOfOrganization: user.head,
     };
 
     const newExam = new ExamWithMcqModel(docs);
@@ -100,30 +101,30 @@ export const onAddExams = async (req, res) => {
 };
 
 // new
-export const onAddCodingQuestio = async (req, res) => {
-  const { email } = req;
-  const { examId, courseName, topic, level, mcqs, description } = req.body;
-  try {
-    const user = await UserModel.findOne({
-      email: email,
-    });
+// export const onAddCodingQuestio = async (req, res) => {
+//   const { email } = req;
+//   const { examId, courseName, topic, level, mcqs, description } = req.body;
+//   try {
+//     const user = await UserModel.findOne({
+//       email: email,
+//     });
 
-    if (!user) {
-      return res.status(401).json({ message: "user not found" });
-    }
+//     if (!user) {
+//       return res.status(401).json({ message: "user not found" });
+//     }
 
-    let transformedArray = mcqs?.map((obj) => {
-      let { Option1, Option2, Option3, Option4, Option5, ...rest } = obj; // Destructuring to remove "email"
-      return {
-        ...rest,
-        asnwers: [Option1, Option2, Option3, Option4, Option5 && Option5],
-      }; // Adding "city" field
-    });
-  } catch (error) {
-    console.log("Coding user- errors", error);
-    return res.status(500).json({ message: "Something went wrong", error });
-  }
-};
+//     let transformedArray = mcqs?.map((obj) => {
+//       let { Option1, Option2, Option3, Option4, Option5, ...rest } = obj; // Destructuring to remove "email"
+//       return {
+//         ...rest,
+//         asnwers: [Option1, Option2, Option3, Option4, Option5 && Option5],
+//       }; // Adding "city" field
+//     });
+//   } catch (error) {
+//     console.log("Coding user- errors", error);
+//     return res.status(500).json({ message: "Something went wrong", error });
+//   }
+// };
 
 export const onGetAllExams = async (req, res) => {
   const { email } = req;
@@ -165,6 +166,7 @@ export const onAddStudents = async (req, res) => {
       if (user) {
         // console.log(user);
         user.courses.push({ ...course, instructorId: headOfUser._id });
+        // user.headOfOrganization = headOfUser.head;
         await user.save();
       } else {
         user = new UserModel({
@@ -175,6 +177,7 @@ export const onAddStudents = async (req, res) => {
           role: student.role,
           userName: student.userName,
           sId: student.studentId,
+          headOfOrganization: headOfUser.head,
           courses: [{ ...course, instructorId: headOfUser._id }],
         });
 
@@ -421,6 +424,7 @@ export const onAddTest = async (req, res) => {
       examsSections: examsSections,
       students: students,
       head: user._id,
+      headOfOrganization: user.head,
     };
     const newExam = new StudentExamSchema(docs);
     await newExam.save();
@@ -500,11 +504,19 @@ export const onDeleteTest = async (req, res) => {
 export const onEditExam = async (req, res) => {
   const { level, mcqsToAdd } = req.body; //
   try {
+    let transformedArray = mcqsToAdd?.map((obj) => {
+      let { Option1, Option2, Option3, Option4, Option5, ...rest } = obj; // Destructuring to remove "email"
+      return {
+        ...rest,
+        asnwers: [Option1, Option2, Option3, Option4, Option5 && Option5],
+      }; // Adding "city" field
+    });
+
     const updatedDocument = await ExamWithMcqModel.findOneAndUpdate(
       { _id: req.params.id }, // Filter by document _id
       {
         $set: { level: level }, // Update 'level' field
-        $push: { mcqs: { $each: mcqsToAdd } }, // Add new MCQs to 'mcqs' array
+        $push: { mcqs: { $each: transformedArray } }, // Add new MCQs to 'mcqs' array
       },
       { new: true } // To return the updated document
     );

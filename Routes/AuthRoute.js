@@ -13,7 +13,6 @@ import {
   onFetchNewLogin,
   onGetAllTodo,
   onGetProfile,
-  onLoginUser,
   onRegisterUser,
   onSendOtp,
   onUpdateProfile,
@@ -28,46 +27,46 @@ const router = express.Router();
 
 // register as super-admin
 
-router.post("/register", onRegisterUser);
+router.post("/register", onRegisterUser); //-
 
 // router.post("/login", onLoginUser);
 
-router.get("/profile", authenticateToken, onGetProfile);
+router.get("/profile", authenticateToken, onGetProfile); //-
 
 router.patch(
   "/profilePic",
   authenticateToken,
   imageUpload.single("image"),
   onUpdateProfile
-);
+); //-
 
 router.patch(
   "/professinal-information",
   authenticateToken,
   onChangeProfessinalInfo
-);
+); //-
 
-router.patch("/personal-information", authenticateToken, onChangePersonalInfo);
+router.patch("/personal-information", authenticateToken, onChangePersonalInfo); //-
 
-router.patch("/bio", authenticateToken, onChangeBio);
+router.patch("/bio", authenticateToken, onChangeBio); //-
 
 router.patch("/experices", authenticateToken, onExpericesChange);
 
-router.patch("/education", authenticateToken, onEddEducation);
+router.patch("/education", authenticateToken, onEddEducation); //-
 
 router.patch(
   "/resume",
   authenticateToken,
   upload.single("pdf"),
   onChangeResume
-);
+); //-
 
-router.patch("/bank-info", authenticateToken, onBankChange);
+router.patch("/bank-info", authenticateToken, onBankChange); //-
 
-router.patch("/change-pass", authenticateToken, onChangePassword);
+router.patch("/change-pass", authenticateToken, onChangePassword); //-
 
 //
-router.post("/add-todo", authenticateToken, onAddTodo);
+router.post("/add-todo", authenticateToken, onAddTodo); //-
 
 router.get("/todo", authenticateToken, onGetAllTodo);
 
@@ -80,6 +79,6 @@ router.post("/send-otp", onSendOtp);
 
 router.post("/verify-otp", onVerifyOtp);
 
-router.post("/login", onFetchNewLogin);
+router.post("/login", onFetchNewLogin); //-
 
 export default router;

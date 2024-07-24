@@ -31,6 +31,7 @@ const ExamWithMcqSchema = new Schema(
       ref: "User",
     },
     examType: { type: String },
+    headOfOrganization: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

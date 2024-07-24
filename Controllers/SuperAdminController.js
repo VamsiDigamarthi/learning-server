@@ -1,3 +1,5 @@
+import FeedbackModel from "../modals/FeedbackModal.js";
+import OrganizationFeedbackModel from "../modals/OrganizationFeedbackmodal.js";
 import PostfeedbackModel from "../modals/PostFeedBack.js";
 import UserModel from "../modals/UserModal.js";
 import ExamWithMcqModel from "../modals/examWithMcq.js";
@@ -52,8 +54,19 @@ export const onFetchAllTrainer = async (req, res) => {
 
 // completed
 export const onFetchAllTest = async (req, res) => {
+  const { email } = req;
   try {
-    const result = await StudentExamModel.find({}).populate({
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const result = await StudentExamModel.find({
+      headOfOrganization: user._id,
+    }).populate({
       path: "head",
       select: "firstName lastName trainerId email",
     });
@@ -127,8 +140,19 @@ export const onFetchAllStudent = async (req, res) => {
 };
 
 export const onFetchAllExams = async (req, res) => {
+  const { email } = req;
+
   try {
-    const result = await ExamWithMcqModel.find({}).populate({
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const result = await ExamWithMcqModel.find({
+      headOfOrganization: user._id,
+    }).populate({
       path: "head",
       select: "firstName trainerId lastName",
     });
@@ -207,9 +231,19 @@ export const onGetAllBatchStudents = async (req, res) => {
 };
 
 export const onFetchAllMentors = async (req, res) => {
+  const { email } = req;
+
   try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
     const mentor = await UserModel.find({
       role: "2",
+      head: user._id,
     });
 
     return res.status(200).json(mentor);
@@ -247,7 +281,16 @@ export const onFetchAllMaterialByTrainer = async (req, res) => {
 
 export const onPostFeedBack = async (req, res) => {
   // console.log(req.body.feedBackQuestions);
+  const { email } = req;
+
   try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
     const docs = {
       instructorId: req.body.instructorId,
       courseName: req.body.courseName,
@@ -255,6 +298,7 @@ export const onPostFeedBack = async (req, res) => {
       designation: req.body.designation,
       feedBackQuestions: req.body.feedBackQuestions,
       // questionType: req.body.questionType,
+      headOfOrganization: user._id,
     };
 
     const newModal = new PostfeedbackModel(docs);
@@ -359,5 +403,63 @@ export const onFetchSuperAdminStudentTask = async (req, res) => {
     return res
       .status(500)
       .json({ message: "super admin fetch trainer task failed", error });
+  }
+};
+
+export const onOrganizationOwnFeedback = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const docs = {
+      feedBackQuestions: req.body.feedBackQuestions,
+      headOfOrganization: user._id,
+    };
+
+    const newModal = new OrganizationFeedbackModel(docs);
+
+    await newModal.save();
+
+    return res.status(201).json({ message: "FeedBack Questions Added...!" });
+  } catch (error) {
+    console.log("Organization added feebback failed", error);
+    return res
+      .status(500)
+      .json({ message: "Organization added feebback failed", error });
+  }
+};
+
+export const onOrganizationFetchTrainerFeedbackGiveStudent = async (
+  req,
+  res
+) => {
+  const { email } = req;
+  const { instructorId, courseName } = req.params;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const trainerFeedback = await FeedbackModel.find({
+      instructorId: instructorId,
+      courseName: courseName,
+    });
+
+    return res.status(200).json(trainerFeedback);
+  } catch (error) {
+    console.log("Organization added feedback failed", error);
+    return res
+      .status(500)
+      .json({ message: "Organization Fetch feedback failed", error });
   }
 };

@@ -196,8 +196,10 @@ export const onSubmittedExam = async (req, res) => {
     }
 
     let totalMark = 0;
-    req?.body?.forEach((each) => (totalMark += each.totalMarks));
-    console.log(totalMark);
+    if (req?.body?.length > 0) {
+      req?.body?.forEach((each) => (totalMark += each.totalMarks));
+      console.log(totalMark);
+    }
     const result = await StudentExamModel.updateOne(
       { _id: req.params.id, "students.studentId": user._id },
       {
@@ -339,6 +341,26 @@ export const onFetchFeedBackOrganization = async (req, res) => {
     return res.status(200).json(feebBack);
   } catch (error) {
     console.log("login user- errors", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+export const onFetchAllFeebBack = async (req, res) => {
+  const { email } = req;
+
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(200).json(user);
+    }
+
+    const feeback = await FeedbackModel.find({ creater: user._id });
+    return res.status(200).json(feeback);
+  } catch (error) {
+    console.log("feedback fetch student failed...!", error);
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };

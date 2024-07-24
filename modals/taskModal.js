@@ -5,26 +5,26 @@ const TaskSchema = new Schema(
   {
     taskId: {
       type: String,
-      required: true,
+      // required: true,
     },
     taskName: {
       type: String,
     },
     priority: {
       type: String,
-      required: true,
+      // required: true,
     },
     startDate: {
       type: String,
-      required: true,
+      // required: true,
     },
     endDate: {
       type: String,
-      required: true,
+      // required: true,
     },
     passKey: {
       type: String,
-      required: true,
+      // required: true,
     },
     description: {
       type: String,
@@ -36,11 +36,21 @@ const TaskSchema = new Schema(
     ],
     userId: {
       type: String,
+      // required: true,
+    },
+    typeOfUserRole: {
+      type: String,
+      //
       required: true,
     },
-    typeOfUserRole: { type: String, required: true },
-    userName: { type: "string", required: true },
-    targetUserId: { type: "string", required: true },
+    userName: {
+      type: "string",
+      //  required: true
+    },
+    targetUserId: {
+      type: "string",
+      // required: true
+    },
     whoCreated: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

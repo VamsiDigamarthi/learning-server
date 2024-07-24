@@ -36,6 +36,7 @@ const PostfeedbackSchema = new Schema(
       type: [QuestionSchema],
       required: true,
     },
+    headOfOrganization: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
