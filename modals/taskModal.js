@@ -51,6 +51,13 @@ const TaskSchema = new Schema(
       type: "string",
       // required: true
     },
+    teamMembers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        // required: true,
+      },
+    ],
     whoCreated: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

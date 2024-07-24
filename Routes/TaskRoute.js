@@ -71,7 +71,7 @@ router.delete("/delete/:taskId", authenticateToken, deleteTask);
 router.patch(
   "/edit/:taskId",
   authenticateToken,
-  taskUpload.array("newFiles", 100),
+  taskUpload.array("files", 100),
   onEditTask
 );
 

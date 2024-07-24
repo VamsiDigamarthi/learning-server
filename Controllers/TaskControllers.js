@@ -17,6 +17,7 @@ export const addTask = async (req, res, next) => {
     userId,
     userName,
     targetUserId,
+    teamMembers,
     typeOfUserRole,
   } = req.body;
   try {
@@ -55,6 +56,7 @@ export const addTask = async (req, res, next) => {
       targetUserId,
       taskFiles,
       typeOfUserRole,
+      teamMembers,
       whoCreated: user._id,
       headOfOrganization: headOfId,
     };
@@ -100,6 +102,11 @@ export const onEditTask = async (req, res) => {
     description,
     deletedFiles,
   } = req.body;
+
+  // console.log(req.files);
+
+  let de = deletedFiles?.split(",");
+
   try {
     const user = await UserModel.findOne({
       email: email,
@@ -119,8 +126,9 @@ export const onEditTask = async (req, res) => {
     if (passKey) updateFields.passKey = passKey;
     if (description) updateFields.description = description;
 
-    if (deletedFiles && Array.isArray(deletedFiles)) {
-      deletedFiles.forEach((filePath) => {
+    if (de && Array.isArray(de)) {
+      // console.log("dfghjkl;'");
+      de.forEach((filePath) => {
         const fullPath = join(__dirname, "..", filePath);
         fs.unlink(fullPath, (err) => {
           if (err) {
@@ -133,12 +141,12 @@ export const onEditTask = async (req, res) => {
 
       await TaskModel.updateOne(
         { _id: taskId },
-        { $pull: { taskFiles: { $in: deletedFiles } } }
+        { $pull: { taskFiles: { $in: de } } }
       );
     }
-
-    if (req.newFiles && req.newFiles.length > 0) {
-      const newFiles = req.newFiles.map((file) => file.path);
+    // console.log("hgvhjm");
+    if (req.files && req.files.length > 0) {
+      const newFiles = req.files.map((file) => file.path);
       await TaskModel.updateOne(
         { _id: taskId },
         { $push: { taskFiles: { $each: newFiles } } }
