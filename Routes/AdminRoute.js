@@ -18,6 +18,7 @@ import {
   onFetchingAllTests,
   onFetchStudentTasks,
   onGetAllExams,
+  onGetAllStudentTasks,
 } from "../Controllers/AdminControllers.js";
 import upload from "../middlewares/fileUploadmiddleware.js";
 
@@ -75,5 +76,11 @@ router.patch("/delete-batch", onDeleteBatch);
 
 // 16-07-2024
 router.get("/only-student-task", authenticateToken, onFetchStudentTasks);
+
+router.get(
+  "/get-all-student/:instructorId",
+  // authenticateToken,
+  onGetAllStudentTasks
+);
 
 export default router;

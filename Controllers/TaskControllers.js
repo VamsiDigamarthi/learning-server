@@ -103,9 +103,9 @@ export const onEditTask = async (req, res) => {
     deletedFiles,
   } = req.body;
 
-  // console.log(req.files);
-
   let de = deletedFiles?.split(",");
+  console.log(req.files);
+  console.log("de", de);
 
   try {
     const user = await UserModel.findOne({

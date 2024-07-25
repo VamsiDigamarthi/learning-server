@@ -602,3 +602,21 @@ export const onFetchStudentTasks = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };
+
+export const onGetAllStudentTasks = async (req, res) => {
+  const { instructorId } = req.params;
+  try {
+    const students = await UserModel.find({
+      courses: {
+        $elemMatch: {
+          instructorId: instructorId,
+        },
+      },
+    });
+
+    return res.status(200).json(students);
+  } catch (error) {
+    console.log("Fetch student failed", error);
+    return res.status(500).json({ message: "Fetch student failed", error });
+  }
+};
