@@ -3,6 +3,7 @@ import UserModel from "../modals/UserModal.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import fs from "fs";
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const addTask = async (req, res, next) => {
   const { email } = req;
@@ -24,7 +25,7 @@ export const addTask = async (req, res, next) => {
     const user = await UserModel.findOne({
       email: email,
     });
-
+    let teamMembersArr = teamMembers.split(",");
     if (!user) {
       return res.status(401).json({ message: "user not found" });
     }
@@ -56,7 +57,7 @@ export const addTask = async (req, res, next) => {
       targetUserId,
       taskFiles,
       typeOfUserRole,
-      teamMembers,
+      teamMembers: teamMembersArr,
       whoCreated: user._id,
       headOfOrganization: headOfId,
     };
@@ -104,8 +105,6 @@ export const onEditTask = async (req, res) => {
   } = req.body;
 
   let de = deletedFiles?.split(",");
-  console.log(req.files);
-  console.log("de", de);
 
   try {
     const user = await UserModel.findOne({
