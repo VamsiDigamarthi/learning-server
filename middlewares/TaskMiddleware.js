@@ -7,7 +7,12 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const uniqueSuffix =
+      file.originalname.split(".")[0] +
+      "_" +
+      Date.now() +
+      "_" +
+      Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
@@ -20,13 +25,17 @@ const fileFilter = (req, file, cb) => {
     "image/jpg",
     "application/vnd.ms-powerpoint",
     "application/msword",
+    "application/zip",
+    "video/mp4",
   ];
 
   if (allowedFileTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(
-      new Error("Only PDF, JPG, PNG, JPEG, DOC, and PPT files are allowed!"),
+      new Error(
+        "Only PDF, JPG, PNG, JPEG, DOC, PPT, ZIP, and MP4 files are allowed!"
+      ),
       false
     );
   }

@@ -620,3 +620,11 @@ export const onGetAllStudentTasks = async (req, res) => {
     return res.status(500).json({ message: "Fetch student failed", error });
   }
 };
+
+export const onAdminTask = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log("Fetch student failed", error);
+    return res.status(500).json({ message: "Fetch student failed", error });
+  }
+};

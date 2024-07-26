@@ -102,29 +102,20 @@ export const onEditTask = async (req, res) => {
     passKey,
     description,
     deletedFiles,
+    teamMembers,
   } = req.body;
+  // console.log(teamMembers);
+  // console.log(req.body);
+  let de;
 
-  let de = deletedFiles?.split(",");
+  let team;
+  if (teamMembers.length > 0) {
+    team = teamMembers.split(",");
+  }
 
-  try {
-    const user = await UserModel.findOne({
-      email: email,
-    });
-
-    if (!user) {
-      return res.status(401).json({ message: "user not found" });
-    }
-    const updateFields = {};
-
-    // const files = req.newFiles;
-
-    if (taskName) updateFields.taskName = taskName; // Corrected to taskName
-    if (priority) updateFields.priority = priority;
-    if (startDate) updateFields.startDate = startDate;
-    if (endDate) updateFields.endDate = endDate;
-    if (passKey) updateFields.passKey = passKey;
-    if (description) updateFields.description = description;
-
+  if (deletedFiles.length > 0) {
+    de = deletedFiles?.split(",");
+    // console.log(de);
     if (de && Array.isArray(de)) {
       // console.log("dfghjkl;'");
       de.forEach((filePath) => {
@@ -143,6 +134,31 @@ export const onEditTask = async (req, res) => {
         { $pull: { taskFiles: { $in: de } } }
       );
     }
+  }
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const updateFields = {};
+
+    // const files = req.newFiles;
+
+    if (taskName) updateFields.taskName = taskName; // Corrected to taskName
+    if (priority) updateFields.priority = priority;
+    if (startDate) updateFields.startDate = startDate;
+    if (endDate) updateFields.endDate = endDate;
+    if (passKey) updateFields.passKey = passKey;
+    if (description) updateFields.description = description;
+    if (team.length > 0) {
+      updateFields.teamMembers = team;
+    } else {
+      updateFields.teamMembers = [];
+    }
+
     // console.log("hgvhjm");
     if (req.files && req.files.length > 0) {
       const newFiles = req.files.map((file) => file.path);
@@ -224,6 +240,33 @@ export const onFetchTrainerOwnTask = async (req, res) => {
     }
 
     const trainerOwnTask = await TaskModel.find({ targetUserId: user._id });
+
+    return res.status(200).json(trainerOwnTask);
+  } catch (error) {
+    console.log("login user- errors", error);
+    return res
+      .status(500)
+      .json({ message: "Fetch trainer own task failed", error });
+  }
+};
+
+export const onFetching = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+
+    const trainerOwnTask = await TaskModel.find({
+      $or: [
+        { targetUserId: user._id },
+        { teamMembers: { $in: [user._id] } }, // Check if user._id is in the teamMembers array
+      ],
+    });
 
     return res.status(200).json(trainerOwnTask);
   } catch (error) {

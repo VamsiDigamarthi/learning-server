@@ -6,6 +6,7 @@ import {
   addTask,
   deleteTask,
   onEditTask,
+  onFetching,
   onFetchingTaskIdWithTaskName,
   onFetchingTaskIdWithTaskNameWithStartData,
   onFetchTrainerOwnTask,
@@ -86,5 +87,7 @@ router.patch(
   authenticateToken,
   onFetchingTaskIdWithTaskNameWithStartData
 );
+
+router.get("/own-tasks", authenticateToken, onFetching);
 
 export default router;

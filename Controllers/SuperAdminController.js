@@ -372,7 +372,11 @@ export const onFetchSuperAdminTrainerTask = async (req, res) => {
     const allTrainerTask = await TaskModel.find({
       headOfOrganization: user._id,
       typeOfUserRole: "2",
+    }).populate({
+      path: "targetUserId",
+      select: "firstName lastName email image", // Add the fields you want to include
     });
+    // .select("firstname image");
     return res.status(200).json(allTrainerTask);
   } catch (error) {
     console.log("super admin fetch trainer task failed", error);
@@ -395,8 +399,10 @@ export const onFetchSuperAdminStudentTask = async (req, res) => {
 
     const allTrainerTask = await TaskModel.find({
       headOfOrganization: user._id,
-      typeOfUserRole: "3",
-    });
+      // typeOfUserRole: "3",
+    })
+      .populate("targetUserId")
+      .populate("teamMembers");
     return res.status(200).json(allTrainerTask);
   } catch (error) {
     console.log("super admin fetch trainer task failed", error);

@@ -34,6 +34,10 @@ const TaskSchema = new Schema(
         type: String,
       },
     ],
+    progress: {
+      type: Number,
+      default: 0,
+    },
     userId: {
       type: String,
       // required: true,
@@ -48,7 +52,9 @@ const TaskSchema = new Schema(
       //  required: true
     },
     targetUserId: {
-      type: "string",
+      // type: "string",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       // required: true
     },
     teamMembers: [
