@@ -252,6 +252,7 @@ export const onFetchTrainerOwnTask = async (req, res) => {
 
 export const onFetching = async (req, res) => {
   const { email } = req;
+  // console.log(email);
   try {
     const user = await UserModel.findOne({
       email: email,
@@ -267,7 +268,7 @@ export const onFetching = async (req, res) => {
         { teamMembers: { $in: [user._id] } }, // Check if user._id is in the teamMembers array
       ],
     });
-
+    // console.log(trainerOwnTask);
     return res.status(200).json(trainerOwnTask);
   } catch (error) {
     console.log("login user- errors", error);

@@ -463,8 +463,8 @@ export const onFetchingAllTests = async (req, res) => {
 
 export const onEditTest = async (req, res) => {
   const { cutOff, resultType } = req.body;
-  console.log(req.params.testId);
-  console.log(cutOff, resultType);
+  // console.log(req.params.testId);
+  // console.log(cutOff, resultType);
   try {
     if (req.params.testId && resultType) {
       await StudentExamModel.updateOne(
@@ -623,6 +623,26 @@ export const onGetAllStudentTasks = async (req, res) => {
 
 export const onAdminTask = async (req, res) => {
   try {
+  } catch (error) {
+    console.log("Fetch student failed", error);
+    return res.status(500).json({ message: "Fetch student failed", error });
+  }
+};
+
+export const onGetAllStudent = async (req, res) => {
+  const { email } = req;
+  try {
+    const user = await UserModel.findOne({
+      email: email,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "user not found" });
+    }
+    const students = await UserModel.find({
+      $and: [{ role: "3" }, { "courses.instructorId": user._id }],
+    });
+    return res.status(200).json(students);
   } catch (error) {
     console.log("Fetch student failed", error);
     return res.status(500).json({ message: "Fetch student failed", error });

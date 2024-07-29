@@ -388,6 +388,7 @@ export const onFetchSuperAdminTrainerTask = async (req, res) => {
 
 export const onFetchSuperAdminStudentTask = async (req, res) => {
   const { email } = req;
+  console.log(email);
   try {
     const user = await UserModel.findOne({
       email: email,

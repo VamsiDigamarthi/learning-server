@@ -18,6 +18,7 @@ import {
   onFetchingAllTests,
   onFetchStudentTasks,
   onGetAllExams,
+  onGetAllStudent,
   onGetAllStudentTasks,
 } from "../Controllers/AdminControllers.js";
 import upload from "../middlewares/fileUploadmiddleware.js";
@@ -82,5 +83,7 @@ router.get(
   // authenticateToken,
   onGetAllStudentTasks
 );
+
+router.get("/students", authenticateToken, onGetAllStudent);
 
 export default router;
